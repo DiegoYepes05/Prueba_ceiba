@@ -17,16 +17,20 @@ class PostsUserNotifier extends StateNotifier<PostsUserState> {
 
   void loadPost(int userId) async {
     final posts = await userRepository.getPostByUser(userId);
-
-    state = state.copyWith(posts: [...state.posts, ...posts]);
+    if (posts.isEmpty) {
+      state = state.copyWith(isLoading: true);
+    }
+    state = state.copyWith(isLoading: false, posts: [...state.posts, ...posts]);
   }
 }
 
 class PostsUserState {
   final List<Post> posts;
+  final bool isLoading;
 
-  PostsUserState({this.posts = const []});
+  PostsUserState({this.posts = const [], this.isLoading = true});
 
-  PostsUserState copyWith({List<Post>? posts}) =>
-      PostsUserState(posts: posts ?? this.posts);
+  PostsUserState copyWith({List<Post>? posts, bool? isLoading}) =>
+      PostsUserState(
+          posts: posts ?? this.posts, isLoading: isLoading ?? this.isLoading);
 }

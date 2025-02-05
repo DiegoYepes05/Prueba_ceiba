@@ -13,4 +13,19 @@ class UserRepositoryImpl extends UserRepository {
   Future<List<Post>> getPostByUser(int userId) {
     return datasource.getPostByUser(userId);
   }
+
+  @override
+  Future<List<User>?> getLocalUsers() {
+    return datasource.getLocalUsers();
+  }
+
+  @override
+  Future<bool> hasLocalUsers() {
+    return datasource.hasLocalUsers();
+  }
+
+  @override
+  Future<void> saveUsersLocally(List<User> users) {
+    return datasource.saveUsersLocally(users);
+  }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:prueba_ceiba/config/config.dart';
 import 'package:prueba_ceiba/features/user/user.dart';
 
 class PostUserScreen extends StatelessWidget {
@@ -36,6 +37,15 @@ class _PostsUserView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final postsUserState = ref.watch(postUserProvider(userId));
+
+    if (postsUserState.isLoading) {
+      return Center(
+        child: CircularProgressIndicator(
+          strokeWidth: 2,
+          color: colorPrimary,
+        ),
+      );
+    }
 
     return ListView.separated(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -89,11 +99,11 @@ class _PostsUserView extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      '#${index + 1}',
+                      user.phone,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.onPrimaryContainer,
                         fontWeight: FontWeight.bold,
-                        fontSize: 12,
+                        fontSize: 8,
                       ),
                     ),
                   ),

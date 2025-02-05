@@ -8,22 +8,60 @@ final usersProvider = StateNotifierProvider<UsersNotifier, UsersState>((ref) {
 
 class UsersNotifier extends StateNotifier<UsersState> {
   final UserRepository userRepository;
+
   UsersNotifier({required this.userRepository}) : super(UsersState()) {
     loadUsers();
   }
 
-  Future loadUsers() async {
-    final users = await userRepository.getUsers();
+  Future<void> loadUsers() async {
+    try {
+      state = state.copyWith(isLoading: true);
 
-    state = state.copyWith(users: [...state.users, ...users]);
+      if (await userRepository.hasLocalUsers()) {
+        final localUsers = await userRepository.getLocalUsers();
+        if (localUsers != null && localUsers.isNotEmpty) {
+          state = state.copyWith(users: localUsers, isLoading: false);
+          return;
+        }
+      }
+
+      final users = await userRepository.getUsers();
+      state = state.copyWith(users: users, isLoading: false);
+    } catch (e) {
+      state = state.copyWith(error: e.toString(), isLoading: false);
+    }
+  }
+
+  Future<void> refreshUsers() async {
+    try {
+      state = state.copyWith(isLoading: true);
+      final users = await userRepository.getUsers();
+      state = state.copyWith(users: users, isLoading: false);
+    } catch (e) {
+      state = state.copyWith(error: e.toString(), isLoading: false);
+    }
   }
 }
 
 class UsersState {
   final List<User> users;
+  final bool isLoading;
+  final String? error;
 
-  UsersState({this.users = const []});
+  UsersState({
+    this.users = const [],
+    this.isLoading = false,
+    this.error,
+  });
 
-  UsersState copyWith({List<User>? users}) =>
-      UsersState(users: users ?? this.users);
+  UsersState copyWith({
+    List<User>? users,
+    bool? isLoading,
+    String? error,
+  }) =>
+      UsersState(
+        users: users ?? this.users,
+        isLoading: isLoading ?? this.isLoading,
+        error: error ?? this.error,
+      );
 }

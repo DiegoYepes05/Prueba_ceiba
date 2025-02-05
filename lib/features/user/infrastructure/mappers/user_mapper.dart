@@ -18,4 +18,28 @@ class UserMappers {
         companyCatchPhrase: json['company']['catchPhrase'],
         companyBs: json['company']['bs'],
       );
+
+  static Map<String, dynamic> entityToJson(User user) => {
+        'id': user.id,
+        'name': user.name,
+        'username': user.username,
+        'email': user.email,
+        'address': {
+          'street': user.street,
+          'suite': user.suite,
+          'city': user.city,
+          'zipcode': user.zipcode,
+          'geo': {
+            'lat': user.lat,
+            'lng': user.lng,
+          },
+        },
+        'phone': user.phone,
+        'website': user.website,
+        'company': {
+          'name': user.companyName,
+          'catchPhrase': user.companyCatchPhrase,
+          'bs': user.companyBs,
+        },
+      };
 }
